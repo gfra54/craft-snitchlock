@@ -1,23 +1,21 @@
 <?php
 /**
- * Snitch plugin for Craft CMS 3.x
+ * SnitchLock plugin for Craft CMS 3.x
  *
  * Report when two people might be editing the same entry, category, or global
  *
- * @link      http://marion.newlevant.com
- * @copyright Copyright (c) 2019 Marion Newlevant
  */
 
-namespace marionnewlevant\snitch\models;
+namespace gfra54\snitchlock\models;
 
-use marionnewlevant\snitch\Snitch;
+use gfra54\snitchlock\SnitchLock;
 
 use Craft;
 use craft\base\Model;
 use craft\validators\ArrayValidator;
 
 /**
- * Snitch Settings Model
+ * SnitchLock Settings Model
  *
  * This is a model used to define the plugin's settings.
  *
@@ -27,7 +25,7 @@ use craft\validators\ArrayValidator;
  * https://craftcms.com/docs/plugins/models
  *
  * @author    Marion Newlevant
- * @package   Snitch
+ * @package   SnitchLock
  * @since     1.0.0
  */
 class Settings extends Model

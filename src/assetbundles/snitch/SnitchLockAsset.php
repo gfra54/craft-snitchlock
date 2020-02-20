@@ -1,6 +1,6 @@
 <?php
 /**
- * Snitch plugin for Craft CMS 3.x
+ * SnitchLock plugin for Craft CMS 3.x
  *
  * Report when two people might be editing the same entry, category, or global
  *
@@ -8,14 +8,14 @@
  * @copyright Copyright (c) 2019 Marion Newlevant
  */
 
-namespace marionnewlevant\snitch\assetbundles\Snitch;
+namespace gfra54\snitchlock\assetbundles\SnitchLock;
 
 use Craft;
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
 
 /**
- * SnitchAsset AssetBundle
+ * SnitchLockAsset AssetBundle
  *
  * AssetBundle represents a collection of asset files, such as CSS, JS, images.
  *
@@ -31,10 +31,10 @@ use craft\web\assets\cp\CpAsset;
  * This asset bundle is included oncp pages and does the work of tracking collisions
  *
  * @author    Marion Newlevant
- * @package   Snitch
+ * @package   SnitchLock
  * @since     2.0.0
  */
-class SnitchAsset extends AssetBundle
+class SnitchLockAsset extends AssetBundle
 {
     // Public Methods
     // =========================================================================
@@ -45,7 +45,7 @@ class SnitchAsset extends AssetBundle
     public function init()
     {
         // define the path that your publishable resources live
-        $this->sourcePath = "@marionnewlevant/snitch/assetbundles/snitch/dist";
+        $this->sourcePath = "@gfra54/snitchlock/assetbundles/snitchlock/dist";
 
         // define the dependencies
         $this->depends = [
@@ -55,11 +55,11 @@ class SnitchAsset extends AssetBundle
         // define the relative path to CSS/JS files that should be registered with the page
         // when this asset bundle is registered
         $this->js = [
-            'js/snitch.js',
+            'js/snitchlock.js',
         ];
 
         $this->css = [
-            'css/snitch.css',
+            'css/snitchlock.css',
         ];
 
         parent::init();

@@ -13,7 +13,7 @@
  * This file exists only as a template for the Snitch settings.
  * It does nothing on its own.
  *
- * Don't edit this file, instead copy it to 'craft/config' as 'snitch.php'
+ * Don't edit this file, instead copy it to 'craft/config' as 'snitchlock.php'
  * and make your changes there to override default settings.
  *
  * Once copied to 'craft/config', this file will be multi-environment aware as
@@ -23,7 +23,7 @@
 
 return [
     'serverPollInterval' => 2, // interval for polling server (in seconds)
-    'messageTemplate' => 'May also be edited by: <a href="mailto:{{user.email}}">{{user.username}}</a>.', // warning message
+    'messageTemplate' => '<a href="mailto:{{user.email}}">{{user.username}} (#{{user.id}})</a> as locked this entry. You can\'t edit it. <a href="/admin/entries">Go back to the entries list</a>.' // warning message
     // These are the selectors for the hidden input
     // fields with the id of whatever we are editing.
     // These selectors need to be this specific - [name$="Id"] would pick up

@@ -1,5 +1,5 @@
 <?php
-namespace marionnewlevant\snitch\migrations;
+namespace gfra54\snitchlock\migrations;
 
 use craft\db\Migration;
 
@@ -8,10 +8,10 @@ class Install extends Migration
     public function safeUp()
     {
         // create our table
-        $this->createTable('{{%snitch_collisions}}', [
+        $this->createTable('{{%snitchlock_collisions}}', [
             'id' => $this->primaryKey(),
-            'snitchId' => $this->integer()->notNull(),
-            'snitchType' => $this->string(),
+            'snitchlockId' => $this->integer()->notNull(),
+            'snitchlockType' => $this->string(),
             'userId' => $this->integer()->notNull(),
             'whenEntered' => $this->dateTime()->notNull(),
             'dateCreated' => $this->dateTime()->notNull(),
@@ -21,13 +21,13 @@ class Install extends Migration
 
         // foreign keys: our userId must be a user id
         $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%snitch_collisions}}', 'userId'),
-            '{{%snitch_collisions}}', 'userId', '{{%users}}', 'id', 'CASCADE', null);
+            $this->db->getForeignKeyName('{{%snitchlock_collisions}}', 'userId'),
+            '{{%snitchlock_collisions}}', 'userId', '{{%users}}', 'id', 'CASCADE', null);
     }
 
     public function safeDown()
     {
         // remove the table on uninstall
-        $this->dropTableIfExists('{{%snitch_collisions}}');
+        $this->dropTableIfExists('{{%snitchlock_collisions}}');
     }
 }

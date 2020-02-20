@@ -1,19 +1,18 @@
  /**
- * Snitch plugin for Craft CMS
+ * SnitchLock plugin for Craft CMS
  *
- * Snitch JS
+ * SnitchLock JS
  *
- * @author    Marion Newlevant
- * @copyright Copyright (c) 2019 Marion Newlevant
- * @link      http://marion.newlevant.com
- * @package   Snitch
- * @since     2.0.3
+ * @author    Gilles FRANCOIS
+ * @link      https://sopress.net
+ * @package   SnitchLock
+ * @since     1.0.0
  */
 /*
 This javascript file is injected on every back-end page. Here is what it does:
-1) Fetch the snitch config values, store them as globals
+1) Fetch the snitchlock config values, store them as globals
 2) Look for edit forms on this page - poll, because we want to find any modal edit windows that may appear.
-For each edit form, we add the <div class="snitch"></div> warning container where any warnings will be displayed,
+For each edit form, we add the <div class="snitchlock"></div> warning container where any warnings will be displayed,
 and start polling the server to look for conflicts.
 When conflicts are reported, they are passed to warn(), which collects the current warnings from the warning
 container (indexed by email address), and adds any new ones. Warnings are never removed, because a change
@@ -38,11 +37,11 @@ var globalFieldInputIdSelector = null;
 var $g_postQueue = $({});
 
 var addToQueue = function(queueFunction) {
-  var state = $g_postQueue.queue('snitch').pop(); // either marker no-op, or queue is empty
-  $g_postQueue.queue('snitch', queueFunction); // add ours
-  $g_postQueue.queue('snitch', function(){}); // add back the no-op
+  var state = $g_postQueue.queue('snitchlock').pop(); // either marker no-op, or queue is empty
+  $g_postQueue.queue('snitchlock', queueFunction); // add ours
+  $g_postQueue.queue('snitchlock', function(){}); // add back the no-op
   if (state === undefined) {
-    $g_postQueue.dequeue('snitch'); // restart if queue was empty
+    $g_postQueue.dequeue('snitchlock'); // restart if queue was empty
   }
 };
 
@@ -67,38 +66,38 @@ var warn = function(elementId, $warnContainer, collisions) {
     // if in old warnings already, ignore
     if (!oldWarnings[email]) {
       // otherwise add to container
-      $warnContainer.append('<div data-email="'+email+'"><div>'+collisions[i].message+' <span>&times;</span></div></div>');
+      $warnContainer.append('<div data-email="'+email+'"><div>'+collisions[i].message+'</div></div>');
     }
   }
 };
 
 // our close button click handler
-$('body').on('click', '.snitch span', function() {
+$('body').on('click', '.snitchlock span', function() {
   var $div = $(this).closest('div[data-email]');
   // hide it with css
-  $div.addClass('snitch--hidden');
+  $div.addClass('snitchlock--hidden');
 });
 
 
 // look for conflicts, then add ourselves to the queue, then wait, then dequeue
 var lookForConflicts = function(next) {
   var myThis = this;
-  var $warnContainer = this.isModal ? this.$form.children('.snitch--modal') : $('.snitch--main');
+  var $warnContainer = this.isModal ? this.$form.children('.snitchlock--modal') : $('.snitchlock--main');
   if (this.isModal && !this.$form.closest('.hud.has-footer[style*="display: block;"]').length) {
     // our modal is gone.
     next();
   } else {
       Craft.postActionRequest(
-        'snitch/collision/ajax-enter',
+        'snitchlock/collision/ajax-enter',
         {
-          snitchId: this.snitchId,
-          snitchType: this.snitchType,
+          snitchlockId: this.snitchlockId,
+          snitchlockType: this.snitchlockType,
           messageTemplate: globalMessage
         },
         function(response, textStatus) {
           if (textStatus == 'success') {
             if (response && response['collisions'].length) {
-              warn(myThis.snitchId, $warnContainer, response['collisions']);
+              warn(myThis.snitchlockId, $warnContainer, response['collisions']);
             }
             addToQueue(lookForConflicts.bind(myThis));
             window.setTimeout(next, globalPollInterval);
@@ -110,32 +109,32 @@ var lookForConflicts = function(next) {
     }
 };
 
-var lookForEditFormsByType = function(snitchType, selector) {
+var lookForEditFormsByType = function(snitchlockType, selector) {
   // find all the hidden id input fields on the page (in main form and any modal forms)
   var $idInputs = $(selector);
 
   $idInputs.each(function() {
     var $thisIdInput = $(this);
-    var snitchId = $thisIdInput.val();
+    var snitchlockId = $thisIdInput.val();
     var $form = $thisIdInput.closest('form');
     var isModal = $form.hasClass('body');
-    var snitchData = $form.data('snitch');
+    var snitchlockData = $form.data('snitchlock');
 
-    if (!snitchData) {
+    if (!snitchlockData) {
       // start looking for conflicts for this thing. Add the div for results,
       // look once, and arrange to poll
       if (isModal) {
-        $form.prepend('<div class="snitch snitch--modal"></div>');
+        $form.prepend('<div class="snitchlock snitchlock--modal"></div>');
       } else {
-        $('body').prepend('<div class="snitch snitch--main"></div>');
+        $('#main-container').prepend('<div class="snitchlock snitchlock--main"></div>');
       }
-      $form.data('snitch', snitchId);
+      $form.data('snitchlock', snitchlockId);
 
       // push our bound lookForConflicts on the queue, which will start queue if needed
       addToQueue(lookForConflicts.bind({
         $form: $form,
-        snitchId: snitchId,
-        snitchType: snitchType,
+        snitchlockId: snitchlockId,
+        snitchlockType: snitchlockType,
         isModal: isModal
       }));
     }
@@ -154,7 +153,7 @@ var lookForEditForms = function() {
 // get our configuration, and once we have that, start polling for edit forms
 var doEverything = function() {
   Craft.postActionRequest(
-      'snitch/collision/get-config',
+      'snitchlock/collision/get-config',
       {},
       function(response, textStatus) {
         if (textStatus == 'success' && response) {

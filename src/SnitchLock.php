@@ -1,6 +1,6 @@
 <?php
 /**
- * Snitch plugin for Craft CMS 3.x
+ * SnitchLock plugin for Craft CMS 3.x
  *
  * Report when two people might be editing the same entry, category, or global
  *
@@ -8,11 +8,11 @@
  * @copyright Copyright (c) 2019 Marion Newlevant
  */
 
-namespace marionnewlevant\snitch;
+namespace gfra54\snitchlock;
 
-use marionnewlevant\snitch\services\Collision as Collision;
-use marionnewlevant\snitch\assetbundles\snitch\SnitchAsset;
-use marionnewlevant\snitch\models\Settings;
+use gfra54\snitchlock\services\Collision as Collision;
+use gfra54\snitchlock\assetbundles\snitchlock\SnitchLockAsset;
+use gfra54\snitchlock\models\Settings;
 
 use Craft;
 use craft\base\Plugin;
@@ -31,24 +31,24 @@ use craft\base\Plugin;
  *
  * https://craftcms.com/docs/plugins/introduction
  *
- * @author    Marion Newlevant
- * @package   Snitch
+ * @author    Gilles FRANCOIS
+ * @package   SnitchLock
  * @since     1.0.0
  *
  * @property  Collision $collision
  * @property  Settings $settings
  * @method    Settings getSettings()
  */
-class Snitch extends Plugin
+class SnitchLock extends Plugin
 {
     // Static Properties
     // =========================================================================
 
     /**
      * Static property that is an instance of this plugin class so that it can be accessed via
-     * Snitch::$plugin
+     * SnitchLock::$plugin
      *
-     * @var Snitch
+     * @var SnitchLock
      */
     public static $plugin;
 
@@ -60,14 +60,14 @@ class Snitch extends Plugin
      *
      * @var string
      */
-     public $schemaVersion = '2.1.0';
+     public $schemaVersion = '1.0.0';
 
     // Public Methods
     // =========================================================================
 
     /**
      * Set our $plugin static property to this class so that it can be accessed via
-     * Snitch::$plugin
+     * SnitchLock::$plugin
      *
      * Called after the plugin class is instantiated; do any one-time initialization
      * here such as hooks and events.
@@ -87,7 +87,7 @@ class Snitch extends Plugin
 
         if (Craft::$app->getRequest()->getIsCpRequest() && !Craft::$app->getRequest()->getIsAjax()) {
             // Register our asset bundle
-            Craft::$app->getView()->registerAssetBundle(SnitchAsset::class);
+            Craft::$app->getView()->registerAssetBundle(SnitchLockAsset::class);
             // on save, remove any collision for this element.
             // I used to do this, but it ties me to
             // specific classes. Instead, just rely on the record timing out.
@@ -99,7 +99,7 @@ class Snitch extends Plugin
 
         Craft::info(
             Craft::t(
-                'snitch',
+                'snitchlock',
                 '{name} plugin loaded',
                 ['name' => $this->name]
             ),

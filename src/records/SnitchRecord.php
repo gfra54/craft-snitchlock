@@ -4,11 +4,9 @@
  *
  * Report when two people might be editing the same entry, category, or global
  *
- * @link      http://marion.newlevant.com
- * @copyright Copyright (c) 2017 Marion Newlevant
  */
 
-namespace marionnewlevant\snitch\records;
+namespace gfra54\snitchlock\records;
 
 use craft\db\ActiveRecord;
 
@@ -47,6 +45,6 @@ class SnitchRecord extends ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%snitch_collisions}}';
+        return '{{%snitchlock_collisions}}';
     }
 }

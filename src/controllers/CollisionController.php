@@ -1,16 +1,14 @@
 <?php
 /**
- * Snitch plugin for Craft CMS 3.x
+ * SnitchLock plugin for Craft CMS 3.x
  *
- * Report when two people might be editing the same entry, category, or global
+ * Lock entry when two people might be editing the same entry, category, or global
  *
- * @link      http://marion.newlevant.com
- * @copyright Copyright (c) 2019 Marion Newlevant
  */
 
-namespace marionnewlevant\snitch\controllers;
+namespace gfra54\snitchlock\controllers;
 
-use marionnewlevant\snitch\Snitch;
+use gfra54\snitchlock\SnitchLock;
 
 use Craft;
 use craft\web\Controller;
@@ -32,7 +30,7 @@ use craft\web\Controller;
  * https://craftcms.com/docs/plugins/controllers
  *
  * @author    Marion Newlevant
- * @package   Snitch
+ * @package   SnitchLock
  * @since     1.0.0
  */
 class CollisionController extends Controller
@@ -53,7 +51,7 @@ class CollisionController extends Controller
 
     /**
      * Handle a request going to our plugin's actionAjaxEnter URL,
-     * e.g.: actions/snitch/collision/ajax-enter
+     * e.g.: actions/snitchlock/collision/ajax-enter
      *
      * Called from the javascript regularly (every 2 seconds)
      * to report that the thing is indeed being edited.
@@ -74,36 +72,43 @@ class CollisionController extends Controller
             return $json;
         }
 
-        $snitchId = (int)(Craft::$app->getRequest()->getBodyParam('snitchId'));
-        $snitchType = Craft::$app->getRequest()->getBodyParam('snitchType');
+        $snitchlockId = (int)(Craft::$app->getRequest()->getBodyParam('snitchlockId'));
+        $snitchlockType = Craft::$app->getRequest()->getBodyParam('snitchlockType');
         $messageTemplate = Craft::$app->getRequest()->getBodyParam('messageTemplate');
         // expire any old collisions
-        Snitch::$plugin->collision->expire();
+        SnitchLock::$plugin->collision->expire();
         // record this person is editing this element
-        Snitch::$plugin->collision->register($snitchId, $snitchType);
+        SnitchLock::$plugin->collision->register($snitchlockId, $snitchlockType);
         // get any collisions
-        $collisionModels = Snitch::$plugin->collision->getCollisions($snitchId, $snitchType);
-        // pull the users out of our collisions
-        $collidingUsers = Snitch::$plugin->collision->collidingUsers($collisionModels);
-        $collisionMessages = Snitch::$plugin->collision->collisionMessages($collidingUsers, $messageTemplate);
+        $collisionModels = SnitchLock::$plugin->collision->getCollisions($snitchlockId, $snitchlockType);
+        $firstEntered = SnitchLock::$plugin->collision->getFirstEntered($snitchlockId, $snitchlockType);
+
+        if(!$firstEntered) {
+            // pull the users out of our collisions
+            $collidingUsers = SnitchLock::$plugin->collision->collidingUsers($collisionModels);
+            $collisionMessages = SnitchLock::$plugin->collision->collisionMessages($collidingUsers, $messageTemplate);
+        } else {
+            $collisionMessages='';
+        }
         // and return
         $json = $this->asJson([
             'success' => true,
             'collisions' => $collisionMessages,
+            'firstEntered'=>$firstEntered
         ]);
         return $json;
     }
 
     /**
      * Handle a request going to our plugin's actionGetConfig URL,
-     * e.g.: actions/snitch/collision/get-config
+     * e.g.: actions/snitchlock/collision/get-config
      *
      * @return mixed
      */
     public function actionGetConfig()
     {
         $this->requireAcceptsJson();
-        $settings = Snitch::$plugin->getSettings();
+        $settings = SnitchLock::$plugin->getSettings();
         $json = $this->asJson([
             'messageTemplate' => $settings['messageTemplate'],
             'serverPollInterval' => $settings['serverPollInterval'],

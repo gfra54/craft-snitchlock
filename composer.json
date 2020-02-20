@@ -1,5 +1,5 @@
 {
-    "name": "marionnewlevant/snitch",
+    "name": "gfra54/snitchlock",
     "description": "Report when two people might be editing the same element (eg entry, category, or global) or field",
     "type": "craft-plugin",
     "version": "3.0.1",
@@ -8,17 +8,17 @@
         "cms",
         "craftcms",
         "craft-plugin",
-        "snitch"
+        "snitchlock"
     ],
     "support": {
-        "docs": "https://github.com/marionnewlevant/craft-snitch/blob/v2/README.md",
-        "issues": "https://github.com/marionnewlevant/craft-snitch/issues"
+        "docs": "https://github.com/gfra54/craft-snitchlock",
+        "issues": "https://github.com/gfra54/craft-snitchlock/issues"
     },
     "license": "MIT",
     "authors": [
         {
-            "name": "Marion Newlevant",
-            "homepage": "http://marion.newlevant.com"
+            "name": "Gilles FRANCOIS",
+            "homepage": "https://sopress.net"
         }
     ],
     "require": {
@@ -26,19 +26,19 @@
     },
     "autoload": {
         "psr-4": {
-            "marionnewlevant\\snitch\\": "src/"
+            "gfra54\\snitchlock\\": "src/"
         }
     },
     "extra": {
-        "name": "Snitch",
-        "handle": "snitch",
+        "name": "SnitchLock",
+        "handle": "snitchlock",
         "hasCpSettings": false,
         "hasCpSection": false,
-        "documentationUrl": "https://github.com/marionnewlevant/craft-snitch/blob/v2/README.md",
-        "changelogUrl": "https://raw.githubusercontent.com/marionnewlevant/craft-snitch/v2/CHANGELOG.md",
+        "documentationUrl": "https://github.com/gfra54/craft-snitchlock",
+        "changelogUrl": "https://github.com/gfra54/craft-snitchlock",
         "components": {
-            "collision": "marionnewlevant\\snitch\\services\\Collision"
+            "collision": "gfra54\\snitchlock\\services\\Collision"
         },
-        "class": "marionnewlevant\\snitch\\Snitch"
+        "class": "gfra54\\snitchlock\\SnitchLock"
     }
 }

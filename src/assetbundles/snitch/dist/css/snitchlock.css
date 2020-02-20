@@ -1,0 +1,47 @@
+/*
+This file is injected on every backend page. It defines the look of the snitchlock warnings.
+Any changes can probably be made with the cpcss plugin.
+The html looks like this (2 warnings, one of them hidden):
+(snitchlock--main for entire page warnings, snitchlock--modal for modal window warnings)
+<div class="snitchlock snitchlock--main">
+  <div data-email="othereditor@sample.com">
+    <div>
+      warning message start
+      <a href="mailto:othereditor@sample.com">other</a>
+      warning message end
+      <span>&times;</span>
+    </div>
+  </div>
+  <div class="snitchlock--hidden" data-email="someone@sample.com">
+    <div>
+      warning message start
+      <a href="mailto:someone@sample.com">other</a>
+      warning message end
+      <span>&times;</span>
+    </div>
+  </div>
+</div>
+ */
+#main-container {
+  position: relative;
+}
+.snitchlock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background:
+  rgba(0,0,0,.5);
+}
+.snitchlock>div {
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  background: #fee100;
+  color:black;
+  padding: 10px;
+  border-radius: 5px;
+}
+

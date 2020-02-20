@@ -1,18 +1,16 @@
 <?php
 /**
- * Snitch plugin for Craft CMS 3.x
+ * SnitchLock plugin for Craft CMS 3.x
  *
  * Report when two people might be editing the same entry, category, or global
  *
- * @link      http://marion.newlevant.com
- * @copyright Copyright (c) 2019 Marion Newlevant
  */
 
-namespace marionnewlevant\snitch\services;
+namespace gfra54\snitchlock\services;
 
-use marionnewlevant\snitch\Snitch;
-use marionnewlevant\snitch\models\SnitchModel;
-use marionnewlevant\snitch\records\SnitchRecord;
+use gfra54\snitchlock\SnitchLock;
+use gfra54\snitchlock\models\SnitchLockModel;
+use gfra54\snitchlock\records\SnitchLockRecord;
 
 use Craft;
 use craft\base\Component;
@@ -29,7 +27,7 @@ use craft\web\View;
  * https://craftcms.com/docs/plugins/services
  *
  * @author    Marion Newlevant
- * @package   Snitch
+ * @package   SnitchLock
  * @since     1.0.0
  */
 class Collision extends Component
@@ -40,18 +38,18 @@ class Collision extends Component
     /**
      * From any other plugin file, call it like this:
      *
-     *     Snitch::$plugin->collision->remove()
+     *     SnitchLock::$plugin->collision->remove()
      *
      * @return mixed
      */
-    public function remove(int $snitchId, string $snitchType, $userId = null)
+    public function remove(int $snitchlockId, string $snitchlockType, $userId = null)
     {
         $userId = $this->_userId($userId);
         $transaction = Craft::$app->getDb()->beginTransaction();
         try {
-            $record = SnitchRecord::findOne([
-                'snitchId' => $snitchId,
-                'snitchType' => $snitchType,
+            $record = SnitchLockRecord::findOne([
+                'snitchlockId' => $snitchlockId,
+                'snitchlockType' => $snitchlockType,
                 'userId' => $userId
             ]);
 
@@ -67,23 +65,23 @@ class Collision extends Component
     }
 
 
-    public function register(int $snitchId, string $snitchType, $userId = null, \DateTime $now = null)
+    public function register(int $snitchlockId, string $snitchlockType, $userId = null, \DateTime $now = null)
     {
         $now = $this->_now($now);
         $userId = $this->_userId($userId);
         $transaction = Craft::$app->getDb()->beginTransaction();
         try {
             // look for existing record to update
-            $record = SnitchRecord::findOne([
-                'snitchId' => $snitchId,
-                'snitchType' => $snitchType,
+            $record = SnitchLockRecord::findOne([
+                'snitchlockId' => $snitchlockId,
+                'snitchlockType' => $snitchlockType,
                 'userId' => $userId
             ]);
 
             if (!$record) {
-                $record = new SnitchRecord();
-                $record->snitchId = $snitchId;
-                $record->snitchType = $snitchType;
+                $record = new SnitchLockRecord();
+                $record->snitchlockId = $snitchlockId;
+                $record->snitchlockType = $snitchlockType;
                 $record->userId = $userId;
             }
             $record->whenEntered = $now;
@@ -96,19 +94,43 @@ class Collision extends Component
         }
     }
 
-    public function getCollisions(int $snitchId, string $snitchType, $userId = null)
+    public function getFirstEntered(int $snitchlockId, string $snitchlockType)
+    {
+        $result = [];
+        $rows = SnitchLockRecord::findAll([
+            'snitchlockId' => $snitchlockId,
+            'snitchlockType' => $snitchlockType,
+        ]);
+        foreach ($rows as $row)
+        {
+            $result[] = new SnitchLockModel($row);
+        }
+
+        $dates = [];
+        foreach( $result as $collision) {
+            $dates[$collision['userId']]=date('Y-m-d-H-i-s',$collision['dateCreated']->getTimestamp());
+        }
+        asort($dates);
+        // me($dates,$result);
+
+        $userId = current(array_keys( $dates ));
+
+        return $userId == $this->_userId();
+    }
+
+    public function getCollisions(int $snitchlockId, string $snitchlockType, $userId = null)
     {
         $userId = $this->_userId($userId);
         $result = [];
-        $rows = SnitchRecord::findAll([
-            'snitchId' => $snitchId,
-            'snitchType' => $snitchType,
+        $rows = SnitchLockRecord::findAll([
+            'snitchlockId' => $snitchlockId,
+            'snitchlockType' => $snitchlockType,
         ]);
         foreach ($rows as $row)
         {
             if ($row->userId !== $userId)
             {
-                $result[] = new SnitchModel($row);
+                $result[] = new SnitchLockModel($row);
             }
         }
         return $result;
@@ -122,7 +144,7 @@ class Collision extends Component
         $old->sub(new \DateInterval('PT'.$timeOut.'S'));
         $transaction = Craft::$app->getDb()->beginTransaction();
         try {
-            $allExpired = SnitchRecord::find()
+            $allExpired = SnitchLockRecord::find()
                 ->where(['<', 'whenEntered', Db::prepareDateForDb($old)])
                 ->all();
             foreach ($allExpired as $expired)
@@ -137,11 +159,11 @@ class Collision extends Component
         }
     }
 
-    public function collidingUsers(array $snitchModels)
+    public function collidingUsers(array $snitchlockModels)
     {
         $result = [];
         $userIds = [];
-        foreach ($snitchModels as $model)
+        foreach ($snitchlockModels as $model)
         {
             $userIds[] = $model->userId;
         }
@@ -180,7 +202,7 @@ class Collision extends Component
     }
 
     // ============== default values =============
-    private function _userId($userId)
+    private function _userId($userId=false)
     {
         if (!$userId) {
             $currentUser = Craft::$app->getUser()->getIdentity();
@@ -198,7 +220,7 @@ class Collision extends Component
 
     private function _serverPollInterval()
     {
-        $settings = Snitch::$plugin->getSettings();
+        $settings = SnitchLock::$plugin->getSettings();
         return $settings['serverPollInterval'];
     }
 }
